@@ -1,103 +1,499 @@
-import Image from "next/image";
+// // src/app/page.tsx
+// "use client";
+
+// import { Suspense } from 'react';
+// import { Canvas } from '@react-three/fiber';
+// import { Loader } from '@react-three/drei';
+// import FluidExperience from './components/FluidExperience';
+
+// export default function Home() {
+//   return (
+//     <>
+//       <div className="w-full h-screen fixed top-0 left-0">
+//         <Suspense fallback={null}>
+//           <Canvas>
+//             <FluidExperience />
+//           </Canvas>
+//         </Suspense>
+//       </div>
+//       <Loader />
+//     </>
+//   );
+// }
+
+
+// src/app/page.tsx
+// src/app/page.tsx
+// src/app/page.tsx
+"use client";
+
+import { useState } from 'react';
+import Header from './components/Header';
+import IntroSection from './components/IntroSection';
+import PortfolioSlide from './components/PortfolioSlide'; // Import the new component
+import ParallaxSection from './components/ParallaxSection'; // Import the new parallax component
+import MagneticButton from './components/MagneticButton'; // Import the new magnetic component
+import MagneticElement from './components/MagneticElement'; // Import the new magnetic element component
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+import useTilt from './components/useTilt';
+
+const servicesData = [
+  { title: 'Web Design', description: 'Stunning, responsive websites built for optimal performance.', image: '/images/services/web-design.jpeg' },
+  { title: 'Custom CRM', description: 'Tailored software to streamline your unique workflows.', image: '/images/services/crm.jpeg' },
+  { title: 'POS Systems', description: 'Seamlessly integrated systems for retail and hospitality.', image: '/images/services/pos.jpeg' },
+];
+
+const portfolioData = [
+  { title: "AIC Platform", description: "A comprehensive platform for the Australian Institute of Company Directors.", image: "/images/portfolio/aic.png" },
+  { title: "Crowded House", description: "An immersive fan experience website for the iconic band.", image: "/images/portfolio/crowdedhouse.png" },
+  { title: "Construction Management", description: "A project management tool for the construction industry.", image: "/images/portfolio/constructionplatform.png" },
+  { title: "Home Direct", description: "Buy your home with AI.", image: "/images/portfolio/homedirect.png" },
+  { title: "Human Appeal", description: "Donate today.", image: "/images/portfolio/humanappeal.png" },
+  { title: "Ice Cream Pro", description: "A platform for wholesale ice cream distribution.", image: "/images/portfolio/icecreampro.png" },
+];
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [activeService, setActiveService] = useState(servicesData[0]);
+  const [modalProject, setModalProject] = useState<null | typeof portfolioData[0]>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  return (
+    <>
+      <Header />
+      <main>
+        <IntroSection />
+
+        {/* --- Enhanced Services Section with Parallax --- */}
+        <ParallaxSection speed={0.3} backgroundSpeed={0.2}>
+          <motion.section
+            id="services"
+            className="min-h-screen py-24 bg-surface flex items-center relative overflow-hidden"
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          {/* Animated background for services */}
+          <motion.div
+            className="absolute inset-0 z-0 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{
+              background: 'radial-gradient(circle at 20% 40%, #50b4ff22 0%, transparent 70%)',
+              animation: 'bgMove1 12s ease-in-out infinite',
+            }}
+          />
+          <style>{`
+            @keyframes bgMove1 {
+              0% { background-position: 0% 50%; }
+              50% { background-position: 100% 50%; }
+              100% { background-position: 0% 50%; }
+            }
+          `}</style>
+          <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center relative z-10">
+            <div>
+              <h2 className="text-4xl font-bold mb-8">Our Expertise</h2>
+              <ul>
+                {servicesData.map((service, idx) => (
+                  <motion.li
+                    key={service.title}
+                    onMouseEnter={() => setActiveService(service)}
+                    className={`text-2xl font-semibold p-4 cursor-pointer transition-all duration-300 border-l-4 ${activeService.title === service.title ? 'border-accent text-foreground' : 'border-transparent text-muted-foreground'}`}
+                    initial={{ opacity: 0, x: -40 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.15, duration: 0.6, type: 'spring' }}
+                    whileHover={{ scale: 1.08, color: '#50b4ff', boxShadow: '0 4px 24px rgba(80,180,255,0.15)' }}
+                  >
+                    {service.title}
+                  </motion.li>
+                ))}
+              </ul>
+            </div>
+            <div className="w-full">
+              <div className="w-full h-96 bg-background rounded-lg border border-border mb-6 overflow-hidden flex items-center justify-center relative">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeService.title}
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.04 }}
+                    transition={{ duration: 0.5 }}
+                    className="absolute inset-0 w-full h-full"
+                  >
+                    <Image src={activeService.image} alt={activeService.title} width={600} height={400} className="w-full h-full object-cover animate-fade-in" />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+              <motion.p
+                key={activeService.description}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="text-muted-foreground"
+              >
+                {activeService.description}
+              </motion.p>
+            </div>
+          </div>
+        </motion.section>
+        </ParallaxSection>
+        {/* --- End Enhanced Services Section --- */}
+
+        <ParallaxSection speed={0.4} backgroundSpeed={0.25}>
+          <motion.section
+            id="portfolio"
+            className="relative bg-background py-24 overflow-hidden"
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            Read our docs
-          </a>
-        </div>
+          {/* Animated background for portfolio */}
+          <motion.div
+            className="absolute inset-0 z-0 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{
+              background: 'radial-gradient(circle at 80% 60%, #ffb45022 0%, transparent 70%)',
+              animation: 'bgMove2 14s ease-in-out infinite',
+            }}
+          />
+          <style>{`
+            @keyframes bgMove2 {
+              0% { background-position: 100% 50%; }
+              50% { background-position: 0% 50%; }
+              100% { background-position: 100% 50%; }
+            }
+          `}</style>
+          <div className="container mx-auto text-center mb-16 relative z-10">
+            <h2 className="text-5xl font-bold">Our Work</h2>
+          </div>
+          {/* Portfolio grid layout */}
+          <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 px-4 relative z-10">
+            {portfolioData.map((project) => (
+              <PortfolioSlide key={project.title} project={project} onClick={() => setModalProject(project)} />
+            ))}
+          </div>
+         <PortfolioModal project={modalProject} onClose={() => setModalProject(null)} />
+        </motion.section>
+        </ParallaxSection>
+
+        <ParallaxSection speed={0.5} backgroundSpeed={0.3} floatingElements={false}>
+          <motion.section
+            id="about"
+            className="min-h-screen bg-surface relative overflow-hidden flex flex-col items-center justify-center py-24"
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+          >
+            {/* Subtle, dark, blurred background for depth */}
+            <div className="absolute inset-0 z-0 pointer-events-none" style={{
+              background: 'radial-gradient(circle at 60% 40%, #181c2a 0%, #0f2027 100%)',
+              filter: 'blur(12px)',
+              opacity: 0.85,
+            }} />
+            {/* Glassmorphism panel for main content with noise and light sweep overlays */}
+            <motion.div
+              className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center bg-white/5 backdrop-blur-lg rounded-2xl shadow-xl px-8 py-16 border border-white/10 overflow-hidden"
+              initial={{ opacity: 0, y: 40, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.9, ease: 'easeOut' }}
+              viewport={{ once: true }}
+            >
+              {/* Soft noise overlay */}
+              <div className="pointer-events-none absolute inset-0 z-10 mix-blend-soft-light" style={{
+                backgroundImage: 'url("/images/noise.png")',
+                opacity: 0.13,
+              }} />
+              {/* Subtle light sweep */}
+              <div className="pointer-events-none absolute inset-0 z-20" style={{
+                background: 'linear-gradient(120deg, transparent 60%, #fff2 80%, transparent 100%)',
+                animation: 'lightSweep 8s linear infinite',
+                backgroundSize: '200% 100%',
+                backgroundPosition: '0% 0%',
+              }} />
+              <style>{`
+                @keyframes lightSweep {
+                  0% { background-position: 0% 0%; }
+                  100% { background-position: 100% 0%; }
+                }
+              `}</style>
+              <motion.h2
+                className="text-5xl md:text-6xl font-extrabold mb-6 text-white drop-shadow-lg relative z-30"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1 }}
+                viewport={{ once: true }}
+              >
+                We Are Zortech
+              </motion.h2>
+              <motion.p
+                className="text-2xl md:text-3xl font-semibold text-accent mb-8 relative z-30"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
+                Where Digital Experiences Become Art
+              </motion.p>
+              {/* Large stylized quote with animated underline */}
+              <motion.blockquote
+                className="text-2xl md:text-3xl italic text-muted-foreground mb-10 max-w-2xl mx-auto font-serif relative z-30"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.25 }}
+                viewport={{ once: true }}
+              >
+                <span className="block relative pb-4 group">
+                  We don’t just build websites. We craft digital journeys that move people.
+                  <span className="absolute left-1/2 -translate-x-1/2 bottom-0 w-2/3 h-0.5 rounded-full bg-accent/40 transition-all duration-500 group-hover:bg-gradient-to-r group-hover:from-accent group-hover:to-accent/0 group-hover:w-full animate-underline" />
+                </span>
+                <style>{`
+                  .animate-underline {
+                    background-size: 200% 100%;
+                  }
+                  .group:hover .animate-underline {
+                    background: linear-gradient(90deg, #50b4ff, #b450ff, #ffb450, #50b4ff);
+                    background-size: 200% 100%;
+                    animation: underlineSweep 1.2s cubic-bezier(.4,0,.2,1) 1;
+                  }
+                  @keyframes underlineSweep {
+                    0% { width: 0; opacity: 0.2; }
+                    40% { width: 60%; opacity: 1; }
+                    100% { width: 100%; opacity: 1; }
+                  }
+                `}</style>
+              </motion.blockquote>
+              <motion.div
+                className="mb-12 relative z-30"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.3 }}
+                viewport={{ once: true }}
+              >
+                <p className="text-base md:text-lg text-foreground max-w-2xl mx-auto">
+                  Founded in 2025, Zortech was born from a passion for technology and a desire to help businesses thrive in the digital age. We focus on building strong, collaborative partnerships with clients, dedicating ourselves to crafting high-quality digital solutions that are not just functional, but also drive real, measurable results. Our philosophy: every project is a work of art.
+                </p>
+              </motion.div>
+              {/* Value/USP pillars row with icon microinteractions */}
+              <div className="flex flex-col md:flex-row justify-center items-stretch gap-8 md:gap-0 mb-8 w-full max-w-2xl mx-auto relative z-30">
+                {[
+                  { icon: '💡', label: 'Creative Vision', desc: 'We turn ideas into digital masterpieces with bold design and innovative thinking.', color: '#50b4ff' },
+                  { icon: '⚡', label: 'Cutting-Edge Tech', desc: 'We use the latest technologies to build fast, scalable, and future-proof solutions.', color: '#b450ff' },
+                  { icon: '🤝', label: 'Collaborative Spirit', desc: 'We believe the best work happens when we partner closely with our clients.', color: '#ffb450' },
+                ].map((item, idx, arr) => (
+                  <div key={item.label} className="flex-1 flex flex-col items-center px-4 md:px-8 text-center relative group">
+                    <motion.span
+                      className="text-4xl md:text-5xl mb-3"
+                      style={{ color: item.color }}
+                      whileHover={{ scale: 1.18, textShadow: `0 0 16px ${item.color}` }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    >
+                      {item.icon}
+                    </motion.span>
+                    <span className="text-lg md:text-xl font-bold mb-2 text-foreground">{item.label}</span>
+                    <span className="text-base text-muted-foreground mb-2">{item.desc}</span>
+                    {/* Vertical divider except after last */}
+                    {idx < arr.length - 1 && (
+                      <span className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 h-16 w-px bg-white/10" />
+                    )}
+                  </div>
+                ))}
+              </div>
+              {/* Magnetic, glowing CTA button */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 1.2 }}
+                viewport={{ once: true }}
+              >
+                <MagneticButton
+                  className="inline-block px-10 py-4 rounded-full bg-accent text-white font-bold text-lg shadow-lg hover:bg-accent/90 transition-colors relative overflow-hidden"
+                  strength={0.7}
+                  style={{ boxShadow: '0 0 32px 0 #50b4ff55, 0 2px 8px #0008' }}
+                >
+                  <span className="relative z-10">Start Your Project With Us</span>
+                  <span className="absolute inset-0 z-0 pointer-events-none animate-pulse"
+                    style={{
+                      background: 'radial-gradient(circle at 60% 40%, #50b4ff44 0%, transparent 80%)',
+                      opacity: 0.3,
+                    }}
+                  />
+                </MagneticButton>
+              </motion.div>
+            </motion.div>
+          </motion.section>
+        </ParallaxSection>
+
+        <motion.section
+          id="contact"
+          className="h-screen relative overflow-hidden flex items-center justify-center"
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        >
+          {/* Animated background for contact */}
+          <motion.div
+            className="absolute inset-0 z-0 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{
+              background: 'radial-gradient(circle at 30% 80%, #50ffb422 0%, transparent 70%)',
+              animation: 'bgMove4 18s ease-in-out infinite',
+            }}
+          />
+          <style>{`
+            @keyframes bgMove4 {
+              0% { background-position: 30% 80%; }
+              50% { background-position: 70% 20%; }
+              100% { background-position: 30% 80%; }
+            }
+          `}</style>
+          <ContactForm />
+        </motion.section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+    </>
+  );
+}
+
+// Add ContactForm component at the bottom of the file
+function ContactForm() {
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 3000);
+  }
+
+  return (
+    <motion.div
+      className="bg-background/90 rounded-xl shadow-xl p-10 w-full max-w-lg z-10"
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.7 }}
+      viewport={{ once: true }}
+    >
+      {submitted ? (
+        <motion.div
+          className="flex flex-col items-center justify-center h-64"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+          <span className="text-5xl mb-4">🎉</span>
+          <h3 className="text-2xl font-bold mb-2">Thank you!</h3>
+          <p className="text-muted-foreground">We'll be in touch soon.</p>
+        </motion.div>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <motion.h2
+            className="text-3xl font-bold mb-2 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            Contact Us
+          </motion.h2>
+          <motion.input
+            type="text"
+            name="name"
+            placeholder="Your Name"
+            value={form.name}
+            onChange={handleChange}
+            className="p-3 rounded border border-border bg-surface focus:outline-accent"
+            required
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            viewport={{ once: true }}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          <motion.input
+            type="email"
+            name="email"
+            placeholder="Your Email"
+            value={form.email}
+            onChange={handleChange}
+            className="p-3 rounded border border-border bg-surface focus:outline-accent"
+            required
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            viewport={{ once: true }}
+          />
+          <motion.textarea
+            name="message"
+            placeholder="Your Message"
+            value={form.message}
+            onChange={handleChange}
+            className="p-3 rounded border border-border bg-surface focus:outline-accent min-h-[120px]"
+            required
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            viewport={{ once: true }}
+          />
+          <MagneticButton
+            type="submit"
+            className="mt-2 px-6 py-3 rounded-full bg-accent text-white font-bold text-lg shadow hover:bg-accent/90 transition-colors"
+            strength={0.8}
+          >
+            Send Message
+          </MagneticButton>
+        </form>
+      )}
+    </motion.div>
+  );
+}
+
+// At the bottom of the file, add the PortfolioModal component
+
+function PortfolioModal({ project, onClose }: { project: any, onClose: () => void }) {
+  return (
+    <AnimatePresence>
+      {project && (
+        <motion.div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          <motion.div
+            className="bg-background rounded-xl shadow-2xl p-8 max-w-2xl w-full relative flex flex-col items-center"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          >
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-2xl text-muted-foreground hover:text-accent transition-colors"
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <div className="w-full aspect-[16/9] relative mb-6">
+              <Image
+                src={project.image}
+                alt={project.title}
+                fill
+                style={{ objectFit: 'cover' }}
+                className="rounded-lg"
+              />
+            </div>
+            <h3 className="text-3xl font-bold mb-2 text-center">{project.title}</h3>
+            <p className="text-lg text-muted-foreground text-center mb-4">{project.description}</p>
+            {/* Add more project details/links here if desired */}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
