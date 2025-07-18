@@ -78,7 +78,7 @@ export default function ThreeBackground() {
   const [pulsing, setPulsing] = useState(false);
   const { scrollYProgress } = useScroll();
   const [scroll, setScroll] = useState(0);
-  const [visible, setVisible] = useState(false);
+  // Remove visible state and scroll-based visibility logic
   const [baseScale, setBaseScale] = useState(1.8);
   const [cameraZ, setCameraZ] = useState(6);
 
@@ -87,16 +87,6 @@ export default function ThreeBackground() {
     const unsub = scrollYProgress.on("change", (v) => setScroll(v));
     return () => unsub();
   }, [scrollYProgress]);
-
-  // Show 3D only after scrolling past hero (e.g., 400px)
-  useEffect(() => {
-    function onScroll() {
-      setVisible(window.scrollY > 400);
-    }
-    window.addEventListener("scroll", onScroll);
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   // Responsive scale and camera
   useEffect(() => {
@@ -138,10 +128,8 @@ export default function ThreeBackground() {
           mixBlendMode: 'screen',
         }}
       />
-      <div
-        className="absolute inset-0 flex items-center justify-center transition-opacity duration-700"
-        style={{ opacity: visible ? 1 : 0 }}
-      >
+      {/* Remove opacity/visibility logic, always render Canvas */}
+      <div className="absolute inset-0 flex items-center justify-center transition-opacity duration-700">
         <Canvas camera={{ position: [0, 0, cameraZ + 3], fov: 60 }} gl={{ alpha: true }} shadows>
           <ambientLight intensity={0.9} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />

@@ -6,7 +6,7 @@ import Footer from './components/Footer'; // Corrected Path
 import CustomCursor from './components/CustomCursor'; // Import the new component
 import PageTransition from './components/PageTransition'; // Import the new component
 import ScrollProgressBar from './components/ScrollProgressBar';
-import ThreeBackground from './components/ThreeBackground';
+// import InfiniteScrollLoopWrapper from './components/InfiniteScrollLoopWrapper';
 // import HeroContent from './components/HeroContent';
 
 
@@ -38,7 +38,6 @@ export default function RootLayout({
       <body className={`${inter.variable} ${poppins.variable} flex flex-col min-h-screen`}>
         <ScrollProgressBar />
         {/* <HeroContent /> */}
-        <ThreeBackground />
         <CustomCursor /> {/* Add the cursor component here */}
         <Header />
         <main className="flex-grow">

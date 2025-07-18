@@ -37,6 +37,14 @@ import MagneticElement from './components/MagneticElement'; // Import the new ma
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import useTilt from './components/useTilt';
+import ThreeBackground from './components/ThreeBackground';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import SwiperCore from 'swiper';
+import { EffectCoverflow } from 'swiper/modules';
+SwiperCore.use([EffectCoverflow]);
+import { useRef } from 'react';
 
 const servicesData = [
   { title: 'Web Design', description: 'Stunning, responsive websites built for optimal performance.', image: '/images/services/web-design.jpeg' },
@@ -53,12 +61,45 @@ const portfolioData = [
   { title: "Ice Cream Pro", description: "A platform for wholesale ice cream distribution.", image: "/images/portfolio/icecreampro.png" },
 ];
 
+function CrystalMotif({ y = 0, x = '50%', size = 80, opacity = 0.18 }) {
+  return (
+    <motion.div
+      className="pointer-events-none absolute z-20"
+      style={{ left: x, top: y, width: size, height: size, transform: 'translate(-50%, 0)' }}
+      animate={{ y: [0, 20, 0] }}
+      transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+    >
+      <svg width={size} height={size} viewBox="0 0 80 80" fill="none">
+        <polygon points="40,5 75,30 62,75 18,75 5,30" fill="#50b4ff" opacity={opacity} />
+        <polygon points="40,15 65,32 58,70 22,70 15,32" fill="#fff" opacity={opacity * 0.5} />
+      </svg>
+    </motion.div>
+  );
+}
+
+function Crystal3DGraphic({ color = '#50b4ff', size = 180, style = {} }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 180 180" fill="none" style={style}>
+      <polygon points="90,10 170,60 150,170 30,170 10,60" fill={color} opacity="0.18" />
+      <polygon points="90,30 150,65 140,150 40,150 30,65" fill="#fff" opacity="0.10" />
+      <polygon points="90,10 120,90 90,170 60,90" fill="#38b6ff" opacity="0.22" />
+    </svg>
+  );
+}
+
 export default function Home() {
   const [activeService, setActiveService] = useState(servicesData[0]);
   const [modalProject, setModalProject] = useState<null | typeof portfolioData[0]>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const swiperRef = useRef<any>(null);
+
+  // Helper to get prev/next project
+  const prevProject = portfolioData[(activeIndex - 1 + portfolioData.length) % portfolioData.length];
+  const nextProject = portfolioData[(activeIndex + 1) % portfolioData.length];
 
   return (
     <>
+      <ThreeBackground />
       <Header />
       <main>
         <IntroSection />
@@ -111,7 +152,7 @@ export default function Home() {
             </div>
             <div className="w-full">
               <div className="w-full h-96 bg-background rounded-lg border border-border mb-6 overflow-hidden flex items-center justify-center relative">
-                <AnimatePresence mode="wait">
+                <AnimatePresence>
                   <motion.div
                     key={activeService.title}
                     initial={{ opacity: 0, scale: 0.96 }}
@@ -142,40 +183,81 @@ export default function Home() {
         <ParallaxSection speed={0.4} backgroundSpeed={0.25}>
           <motion.section
             id="portfolio"
-            className="relative bg-background py-24 overflow-hidden"
+            className="relative bg-[#18181a] py-32 overflow-hidden min-h-[90vh] flex flex-col items-center justify-center"
             initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-          {/* Animated background for portfolio */}
-          <motion.div
-            className="absolute inset-0 z-0 pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            style={{
-              background: 'radial-gradient(circle at 80% 60%, #ffb45022 0%, transparent 70%)',
-              animation: 'bgMove2 14s ease-in-out infinite',
-            }}
-          />
-          <style>{`
-            @keyframes bgMove2 {
-              0% { background-position: 100% 50%; }
-              50% { background-position: 0% 50%; }
-              100% { background-position: 100% 50%; }
-            }
-          `}</style>
-          <div className="container mx-auto text-center mb-16 relative z-10">
-            <h2 className="text-5xl font-bold">Our Work</h2>
-          </div>
-          {/* Portfolio grid layout */}
-          <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 px-4 relative z-10">
-            {portfolioData.map((project) => (
-              <PortfolioSlide key={project.title} project={project} onClick={() => setModalProject(project)} />
-            ))}
-          </div>
-         <PortfolioModal project={modalProject} onClose={() => setModalProject(null)} />
-        </motion.section>
+            {/* Optional noise overlay for texture */}
+            <div className="absolute inset-0 pointer-events-none z-0" style={{ backgroundImage: 'url(/images/noise.png)', opacity: 0.08 }} />
+            <div className="container mx-auto text-center mb-16 relative z-10">
+              <h2 className="text-5xl font-bold text-white tracking-tight uppercase">Our Work</h2>
+            </div>
+            <div className="relative w-full max-w-[1600px] mx-auto flex items-center justify-center mt-20" style={{ minHeight: 520 }}>
+              {/* Prev Title */}
+              <button
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-[20vw] text-right text-4xl md:text-5xl font-light tracking-widest uppercase text-white/10 hover:text-white/40 px-8 py-2 z-20 transition-colors duration-200 select-none"
+                style={{ pointerEvents: 'auto' }}
+                onClick={() => swiperRef.current?.slideTo((activeIndex - 1 + portfolioData.length) % portfolioData.length)}
+                aria-label="Previous project"
+              >
+                {prevProject.title}
+              </button>
+              {/* Swiper Slider */}
+              <Swiper
+                effect={undefined}
+                grabCursor={true}
+                centeredSlides={true}
+                slidesPerView={1}
+                spaceBetween={0}
+                loop={true}
+                onSwiper={swiper => (swiperRef.current = swiper)}
+                onSlideChange={swiper => setActiveIndex(swiper.realIndex)}
+                className="w-full max-w-[1500px] mx-auto"
+                style={{ zIndex: 10 }}
+              >
+                {portfolioData.map((project, idx) => (
+                  <SwiperSlide key={project.title}>
+                    <motion.div
+                      className="relative flex flex-col items-center justify-center cursor-pointer"
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      animate={{ opacity: 1, scale: activeIndex === idx ? 1.14 : 0.96 }}
+                      exit={{ opacity: 0, scale: 0.96 }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                      onClick={() => setModalProject(project)}
+                      style={{ zIndex: activeIndex === idx ? 20 : 1 }}
+                    >
+                      <div className="relative w-[90vw] max-w-[1500px] aspect-[16/7] overflow-hidden mx-auto" style={{ borderRadius: 0, boxShadow: 'none', background: 'none' }}>
+                        <Image
+                          src={project.image}
+                          alt={project.title}
+                          fill={true}
+                          style={{ objectFit: 'cover', borderRadius: 0, boxShadow: 'none', background: 'none' }}
+                          className="transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-black/30" style={{ borderRadius: 0 }} />
+                        <h3 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center text-6xl md:text-7xl font-light text-white tracking-widest uppercase" style={{ letterSpacing: '0.08em', fontFamily: 'Poppins, Inter, sans-serif' }}>
+                          {project.title}
+                        </h3>
+                      </div>
+                    </motion.div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+              {/* Next Title */}
+              <button
+                className="absolute right-0 top-1/2 -translate-y-1/2 w-[20vw] text-left text-4xl md:text-5xl font-light tracking-widest uppercase text-white/10 hover:text-white/40 px-8 py-2 z-20 transition-colors duration-200 select-none"
+                style={{ pointerEvents: 'auto' }}
+                onClick={() => swiperRef.current?.slideTo((activeIndex + 1) % portfolioData.length)}
+                aria-label="Next project"
+              >
+                {nextProject.title}
+              </button>
+            </div>
+            {/* Full-screen detail view/modal */}
+            <PortfolioModal project={modalProject} onClose={() => setModalProject(null)} />
+          </motion.section>
         </ParallaxSection>
 
         <ParallaxSection speed={0.5} backgroundSpeed={0.3} floatingElements={false}>
